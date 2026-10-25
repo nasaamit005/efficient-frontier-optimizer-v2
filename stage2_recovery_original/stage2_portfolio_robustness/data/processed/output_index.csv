@@ -1,0 +1,17 @@
+File,Rows,Purpose
+10_frontier_transition_map.csv,59,Calculated Stage 2 output
+10_frontier_weights_wide.csv,60,Calculated Stage 2 output
+11_rolling_portfolio_weights.csv,188,Calculated Stage 2 output
+11_rolling_realized_returns.csv,3916,Calculated Stage 2 output
+12_insample_outofsample_metrics.csv,6,Calculated Stage 2 output
+12_performance_paths.csv,8142,Calculated Stage 2 output
+12_training_weights.csv,18,Calculated Stage 2 output
+13_rolling_252d_sharpe.csv,17241,Calculated Stage 2 output
+14_bootstrap_frontier_points.csv,739,Calculated Stage 2 output
+15_bootstrap_sharpe_distribution.csv,60,Calculated Stage 2 output
+15_oos_sharpe_block_bootstrap.csv,300,Calculated Stage 2 output
+16_covariance_comparison.csv,36,Calculated Stage 2 output
+16_covariance_optimizer_comparison.csv,4,Calculated Stage 2 output
+assumptions.csv,13,Calculated Stage 2 output
+output_index.csv,15,Calculated Stage 2 output
+validation_checks.csv,10,Calculated Stage 2 output

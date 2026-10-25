@@ -1,0 +1,588 @@
+===== OPTIMIZATION.PY =====
+
+from pathlib import Path
+
+import numpy as np
+import pandas as pd
+from scipy.optimize import linprog, minimize
+
+ROOT = Path(__file__).resolve().parents[1]
+DATA_FILE = ROOT / "data" / "processed" / "daily_returns.csv"
+OUTPUT_DIR = ROOT / "data" / "processed"
+
+TRADING_DAYS = 252
+RISK_FREE_RATE = 0.02
+MAX_WEIGHT = 0.40
+FRONTIER_POINTS = 60
+
+# The S&P 500 is a benchmark, not an investable asset.
+ASSETS = ["AAPL", "MSFT", "GOOGL", "AMZN", "META", "BND"]
+
+
+def portfolio_return(weights, mean_returns):
+    return float(weights @ mean_returns)
+
+
+def portfolio_volatility(weights, covariance):
+    variance = float(weights @ covariance @ weights)
+    return float(np.sqrt(max(variance, 0.0)))
+
+
+def portfolio_sharpe(weights, mean_returns, covariance):
+    volatility = portfolio_volatility(weights, covariance)
+    if volatility <= 1e-12:
+        return -np.inf
+    return (
+        portfolio_return(weights, mean_returns) - RISK_FREE_RATE
+    ) / volatility
+
+
+def optimize_portfolios():
+    OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
+
+    if not DATA_FILE.exists():
+        raise FileNotFoundError(
+            f"Returns file not found: {DATA_FILE}\n"
+            "Run python .\\src\\download_data.py first."
+        )
+
+    returns = pd.read_csv(DATA_FILE, index_col="Date", parse_dates=True)
+
+    missing = sorted(set(ASSETS) - set(returns.columns))
+    if missing:
+        raise ValueError(f"Missing required assets: {missing}")
+
+    returns = returns[ASSETS].replace([np.inf, -np.inf], np.nan).dropna()
+
+    if len(returns) < 252:
+        raise ValueError("At least one year of daily returns is required.")
+
+    if (returns.std() <= 0).any():
+        raise ValueError("An asset has zero return volatility.")
+
+    # Historical estimates, annualized using 252 trading days.
+    mean_returns = returns.mean().to_numpy() * TRADING_DAYS
+    covariance = returns.cov().to_numpy() * TRADING_DAYS
+
+    n_assets = len(ASSETS)
+    initial_weights = np.repeat(1 / n_assets, n_assets)
+    bounds = [(0.0, MAX_WEIGHT)] * n_assets
+
+    constraints = [
+        {"type": "eq", "fun": lambda w: np.sum(w) - 1.0}
+    ]
+
+    # Global minimum-variance portfolio.
+    min_var_result = minimize(
+        lambda w: portfolio_volatility(w, covariance) ** 2,
+        initial_weights,
+        method="SLSQP",
+        bounds=bounds,
+        constraints=constraints,
+        options={"maxiter": 2000, "ftol": 1e-12},
+    )
+
+    if not min_var_result.success:
+        raise RuntimeError(
+            f"Minimum-variance optimization failed: {min_var_result.message}"
+        )
+
+    min_var_weights = min_var_result.x
+
+    # Maximum-Sharpe portfolio.
+    sharpe_result = minimize(
+        lambda w: -portfolio_sharpe(w, mean_returns, covariance),
+        initial_weights,
+        method="SLSQP",
+        bounds=bounds,
+        constraints=constraints,
+        options={"maxiter": 2000, "ftol": 1e-12},
+    )
+
+    if not sharpe_result.success:
+        raise RuntimeError(
+            f"Maximum-Sharpe optimization failed: {sharpe_result.message}"
+        )
+
+    max_sharpe_weights = sharpe_result.x
+
+    # Highest expected return possible under the same weight constraints.
+    max_return_result = linprog(
+        c=-mean_returns,
+        A_eq=np.ones((1, n_assets)),
+        b_eq=[1.0],
+        bounds=bounds,
+        method="highs",
+    )
+
+    if not max_return_result.success:
+        raise RuntimeError("Could not determine the feasible return range.")
+
+    maximum_return = portfolio_return(
+        max_return_result.x, mean_returns
+    )
+    minimum_variance_return = portfolio_return(
+        min_var_weights, mean_returns
+    )
+
+    # Efficient frontier: minimize variance at fixed expected returns.
+    target_returns = np.linspace(
+        minimum_variance_return, maximum_return, FRONTIER_POINTS
+    )
+
+    frontier_rows = []
+    start_weights = min_var_weights.copy()
+
+    for target in target_returns:
+        target_constraints = constraints + [
+            {
+                "type": "eq",
+                "fun": lambda w, target=target:
+                    portfolio_return(w, mean_returns) - target,
+            }
+        ]
+
+        result = minimize(
+            lambda w: portfolio_volatility(w, covariance) ** 2,
+            start_weights,
+            method="SLSQP",
+            bounds=bounds,
+            constraints=target_constraints,
+            options={"maxiter": 2000, "ftol": 1e-11},
+        )
+
+        if result.success:
+            start_weights = result.x
+            volatility = portfolio_volatility(start_weights, covariance)
+            expected_return = portfolio_return(start_weights, mean_returns)
+
+            frontier_rows.append(
+                {
+                    "Expected Return": expected_return,
+                    "Volatility": volatility,
+                    "Sharpe Ratio": (
+                        expected_return - RISK_FREE_RATE
+                    ) / volatility if volatility > 0 else np.nan,
+                }
+            )
+
+    if len(frontier_rows) < 2:
+        raise RuntimeError(
+            "Too few frontier points converged. "
+            "Check the data and optimization constraints."
+        )
+
+    frontier = pd.DataFrame(frontier_rows)
+    frontier.to_csv(OUTPUT_DIR / "efficient_frontier.csv", index=False)
+
+    # Historical static-weight portfolio returns for diagnostic metrics.
+    strategies = {
+        "Maximum Sharpe": max_sharpe_weights,
+        "Minimum Variance": min_var_weights,
+        "Equal Weight": initial_weights,
+    }
+
+    metrics_rows = []
+    weights_rows = []
+
+    for strategy, weights in strategies.items():
+        daily_portfolio_returns = returns.to_numpy() @ weights
+        wealth = np.concatenate(
+            [[1.0], np.cumprod(1.0 + daily_portfolio_returns)]
+        )
+        drawdowns = wealth / np.maximum.accumulate(wealth) - 1.0
+
+        annual_return = float(np.mean(daily_portfolio_returns) * TRADING_DAYS)
+        annual_volatility = float(
+            np.std(daily_portfolio_returns, ddof=1) * np.sqrt(TRADING_DAYS)
+        )
+        downside = np.minimum(daily_portfolio_returns, 0.0)
+        downside_deviation = float(
+            np.sqrt(np.mean(downside**2) * TRADING_DAYS)
+        )
+
+        metrics_rows.append(
+            {
+                "Strategy": strategy,
+                "Expected Annual Return": portfolio_return(
+                    weights, mean_returns
+                ),
+                "Historical Annualized Return": annual_return,
+                "Historical Annualized Volatility": annual_volatility,
+                "Sharpe Ratio": (
+                    annual_return - RISK_FREE_RATE
+                ) / annual_volatility if annual_volatility > 0 else np.nan,
+                "Sortino Ratio": (
+                    (annual_return - RISK_FREE_RATE) / downside_deviation
+                    if downside_deviation > 0 else np.nan
+                ),
+                "Maximum Drawdown": float(drawdowns.min()),
+                "Total Return": float(wealth[-1] - 1.0),
+            }
+        )
+
+        for asset, weight in zip(ASSETS, weights):
+            weights_rows.append(
+                {
+                    "Strategy": strategy,
+                    "Asset": asset,
+                    "Weight": float(weight),
+                }
+            )
+
+    pd.DataFrame(metrics_rows).to_csv(
+        OUTPUT_DIR / "portfolio_metrics.csv", index=False
+    )
+    pd.DataFrame(weights_rows).to_csv(
+        OUTPUT_DIR / "portfolio_weights.csv", index=False
+    )
+
+    print("\nOPTIMIZATION COMPLETE")
+    print(f"Return observations: {len(returns):,}")
+    print(f"Assets: {', '.join(ASSETS)}")
+    print(f"Risk-free rate assumption: {RISK_FREE_RATE:.1%}")
+    print(f"Maximum weight per asset: {MAX_WEIGHT:.0%}")
+    print(f"Frontier points calculated: {len(frontier_rows)}")
+
+    print("\nPORTFOLIO METRICS")
+    print(pd.DataFrame(metrics_rows).round(4).to_string(index=False))
+
+    print("\nMAXIMUM-SHARPE PORTFOLIO WEIGHTS")
+    for asset, weight in zip(ASSETS, max_sharpe_weights):
+        print(f"{asset:6s} {weight:8.2%}")
+
+    print("\nSaved files:")
+    print(OUTPUT_DIR / "efficient_frontier.csv")
+    print(OUTPUT_DIR / "portfolio_metrics.csv")
+    print(OUTPUT_DIR / "portfolio_weights.csv")
+
+
+if __name__ == "__main__":
+    optimize_portfolios()
+===== CREATE_DASHBOARD.PY =====
+
+from pathlib import Path
+
+import numpy as np
+import pandas as pd
+import plotly.graph_objects as go
+from plotly.subplots import make_subplots
+
+ROOT = Path(__file__).resolve().parents[1]
+DATA = ROOT / "data" / "processed"
+OUTPUT = ROOT / "reports" / "efficient_frontier_dashboard.html"
+
+ASSETS = ["AAPL", "MSFT", "GOOGL", "AMZN", "META", "BND"]
+COLORS = {
+    "Maximum Sharpe": "#176B5B",
+    "Minimum Variance": "#D29B32",
+    "Equal Weight": "#4776A8",
+    "S&P 500": "#7C5AA6",
+}
+
+STRATEGIES = ["Maximum Sharpe", "Minimum Variance", "Equal Weight"]
+
+
+def main():
+    returns = pd.read_csv(
+        DATA / "daily_returns.csv",
+        index_col="Date",
+        parse_dates=True,
+    ).sort_index()
+
+    frontier = pd.read_csv(DATA / "efficient_frontier.csv")
+    weights = pd.read_csv(DATA / "portfolio_weights.csv")
+    metrics = pd.read_csv(DATA / "portfolio_metrics.csv")
+
+    returns = returns.replace([np.inf, -np.inf], np.nan)
+    returns = returns.dropna(subset=ASSETS + ["^GSPC"])
+
+    asset_returns = returns[ASSETS]
+    metric_lookup = metrics.set_index("Strategy")
+
+    strategy_returns = {}
+    strategy_weights = {}
+
+    for strategy in STRATEGIES:
+        subset = weights[weights["Strategy"] == strategy]
+        allocation = (
+            subset.set_index("Asset")["Weight"]
+            .reindex(ASSETS)
+            .fillna(0)
+            .to_numpy()
+        )
+
+        strategy_weights[strategy] = allocation
+        strategy_returns[strategy] = asset_returns.to_numpy() @ allocation
+
+    fig = make_subplots(
+        rows=2,
+        cols=2,
+        subplot_titles=[
+            "1. Efficient Frontier",
+            "2. Portfolio Asset Allocation",
+            "3. Historical Growth of $1",
+            "4. Annualized Risk–Return Profile",
+        ],
+        horizontal_spacing=0.13,
+        vertical_spacing=0.19,
+    )
+
+    # PANEL 1: Efficient frontier and optimized portfolios.
+    fig.add_trace(
+        go.Scatter(
+            x=frontier["Volatility"],
+            y=frontier["Expected Return"],
+            mode="lines",
+            name="Efficient frontier",
+            line=dict(color="#244A73", width=3),
+            hovertemplate=(
+                "Risk: %{x:.2%}<br>"
+                "Expected return: %{y:.2%}<extra></extra>"
+            ),
+        ),
+        row=1, col=1,
+    )
+
+    for strategy in STRATEGIES:
+        metric = metric_lookup.loc[strategy]
+
+        fig.add_trace(
+            go.Scatter(
+                x=[metric["Historical Annualized Volatility"]],
+                y=[metric["Historical Annualized Return"]],
+                mode="markers",
+                name=strategy,
+                marker=dict(
+                    size=11,
+                    color=COLORS[strategy],
+                    line=dict(color="white", width=1.5),
+                ),
+                hovertemplate=(
+                    f"{strategy}<br>"
+                    "Risk: %{x:.2%}<br>"
+                    "Return: %{y:.2%}<extra></extra>"
+                ),
+            ),
+            row=1, col=1,
+        )
+
+    # PANEL 2: All six investable assets, including BND.
+    for strategy in STRATEGIES:
+        allocation = strategy_weights[strategy]
+
+        fig.add_trace(
+            go.Bar(
+                x=ASSETS,
+                y=allocation,
+                name=strategy,
+                marker_color=COLORS[strategy],
+                showlegend=False,
+                hovertemplate=(
+                    f"{strategy}<br>"
+                    "%{x}: %{y:.2%}<extra></extra>"
+                ),
+            ),
+            row=1, col=2,
+        )
+
+    # PANEL 3: Descriptive full-sample growth comparison.
+    for strategy in STRATEGIES:
+        growth = np.cumprod(1 + strategy_returns[strategy])
+
+        fig.add_trace(
+            go.Scatter(
+                x=returns.index,
+                y=growth,
+                mode="lines",
+                name=strategy,
+                legendgroup=strategy,
+                line=dict(color=COLORS[strategy], width=2),
+                showlegend=False,
+                hovertemplate=(
+                    f"{strategy}<br>"
+                    "Date: %{x|%Y-%m-%d}<br>"
+                    "Growth of $1: $%{y:.2f}<extra></extra>"
+                ),
+            ),
+            row=2, col=1,
+        )
+
+    benchmark_growth = np.cumprod(1 + returns["^GSPC"].to_numpy())
+
+    fig.add_trace(
+        go.Scatter(
+            x=returns.index,
+            y=benchmark_growth,
+            mode="lines",
+            name="S&P 500",
+            line=dict(color=COLORS["S&P 500"], width=2, dash="dash"),
+            hovertemplate=(
+                "S&P 500<br>"
+                "Date: %{x|%Y-%m-%d}<br>"
+                "Growth of $1: $%{y:.2f}<extra></extra>"
+            ),
+        ),
+        row=2, col=1,
+    )
+
+    # PANEL 4: Individual assets and portfolio strategies.
+    annual_returns = asset_returns.mean() * 252
+    annual_volatility = asset_returns.std(ddof=1) * np.sqrt(252)
+
+    for asset in ASSETS:
+        fig.add_trace(
+            go.Scatter(
+                x=[annual_volatility[asset]],
+                y=[annual_returns[asset]],
+                mode="markers+text",
+                text=[asset],
+                textposition="top center",
+                marker=dict(size=9, color="#4776A8"),
+                showlegend=False,
+                hovertemplate=(
+                    f"{asset}<br>"
+                    "Risk: %{x:.2%}<br>"
+                    "Annualized mean return: %{y:.2%}<extra></extra>"
+                ),
+            ),
+            row=2, col=2,
+        )
+
+    for strategy in STRATEGIES:
+        metric = metric_lookup.loc[strategy]
+
+        fig.add_trace(
+            go.Scatter(
+                x=[metric["Historical Annualized Volatility"]],
+                y=[metric["Historical Annualized Return"]],
+                mode="markers+text",
+                text=[strategy],
+                textposition="bottom center",
+                marker=dict(
+                    size=11,
+                    symbol="diamond",
+                    color=COLORS[strategy],
+                    line=dict(color="white", width=1),
+                ),
+                showlegend=False,
+                hovertemplate=(
+                    f"{strategy}<br>"
+                    "Risk: %{x:.2%}<br>"
+                    "Return: %{y:.2%}<extra></extra>"
+                ),
+            ),
+            row=2, col=2,
+        )
+
+    # Axis formatting.
+    for row, col in [(1, 1), (1, 2), (2, 1), (2, 2)]:
+        fig.update_xaxes(
+            showgrid=True,
+            gridcolor="#E8EDF2",
+            linecolor="#CBD5E1",
+            automargin=True,
+            row=row,
+            col=col,
+        )
+        fig.update_yaxes(
+            showgrid=True,
+            gridcolor="#E8EDF2",
+            linecolor="#CBD5E1",
+            automargin=True,
+            row=row,
+            col=col,
+        )
+
+    fig.update_xaxes(
+        title_text="Annualized volatility",
+        tickformat=".0%",
+        row=1, col=1,
+    )
+    fig.update_yaxes(
+        title_text="Expected annual return",
+        tickformat=".0%",
+        row=1, col=1,
+    )
+
+    fig.update_xaxes(title_text="Investable asset", row=1, col=2)
+    fig.update_yaxes(
+        title_text="Allocation",
+        tickformat=".0%",
+        range=[0, 0.45],
+        row=1, col=2,
+    )
+
+    fig.update_xaxes(title_text="Date", row=2, col=1)
+    fig.update_yaxes(title_text="Growth of $1", row=2, col=1)
+
+    fig.update_xaxes(
+        title_text="Annualized volatility",
+        tickformat=".0%",
+        row=2, col=2,
+    )
+    fig.update_yaxes(
+        title_text="Annualized mean return",
+        tickformat=".0%",
+        row=2, col=2,
+    )
+
+    fig.update_layout(
+        title=dict(
+            text=(
+                "Efficient Frontier & Portfolio Allocation Analysis"
+                "<br><sup>Historical estimates | Long-only | "
+                "Maximum 40% per asset</sup>"
+            ),
+            x=0.5,
+            xanchor="center",
+            y=0.98,
+            yanchor="top",
+        ),
+        template="plotly_white",
+        autosize=True,
+        height=1000,
+        paper_bgcolor="#FFFFFF",
+        plot_bgcolor="#FBFCFE",
+        font=dict(
+            family="Arial, sans-serif",
+            size=12,
+            color="#243447",
+        ),
+        title_font=dict(size=23, color="#17324D"),
+        legend=dict(
+            orientation="h",
+            x=0.5,
+            xanchor="center",
+            y=-0.10,
+            yanchor="top",
+            font=dict(size=11),
+        ),
+        barmode="group",
+        bargap=0.22,
+        hovermode="closest",
+        margin=dict(l=75, r=35, t=125, b=125),
+    )
+
+    OUTPUT.parent.mkdir(parents=True, exist_ok=True)
+
+    fig.write_html(
+        OUTPUT,
+        full_html=True,
+        include_plotlyjs=True,
+        config={
+            "responsive": True,
+            "displaylogo": False,
+            "scrollZoom": True,
+        },
+    )
+
+    print("DASHBOARD UPDATED SUCCESSFULLY")
+    print(f"File: {OUTPUT}")
+    print("One HTML file | Four panels | Responsive layout")
+    print("Includes all six assets and the S&P 500 benchmark.")
+    print("Note: Historical growth uses full-sample optimized weights.")
+
+
+if __name__ == "__main__":
+    main()

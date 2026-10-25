@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>7. Individual Asset Risk vs. Return — Full Analysis</title>
+<style>
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  background: #F4F7FB;
+  color: #172B4D;
+  font-family: Inter, Segoe UI, Arial, sans-serif;
+  line-height: 1.65;
+}
+header {
+  padding: 28px clamp(18px, 4vw, 55px);
+  color: white;
+  background: linear-gradient(115deg, #173B70, #4F46E5 58%, #0EA5A4);
+}
+header h1 {
+  margin: 8px 0;
+  font-size: clamp(25px, 3vw, 36px);
+}
+header p { max-width: 950px; margin: 0; }
+main {
+  max-width: 1400px;
+  margin: auto;
+  padding: 24px clamp(12px, 3vw, 38px) 50px;
+}
+.panel {
+  background: white;
+  border: 1px solid #E4EAF3;
+  border-radius: 16px;
+  padding: 20px;
+  margin: 18px 0;
+  box-shadow: 0 5px 18px #1E3A5F08;
+}
+h2 { margin: 0 0 8px; font-size: 21px; }
+.muted { color: #61718A; }
+.finding {
+  border-left: 5px solid #0F766E;
+  background: #F0FDFA;
+  padding: 14px 17px;
+  border-radius: 8px;
+}
+a { color: #4338CA; font-weight: 700; }
+.analysis-table {
+  border-collapse: collapse;
+  width: 100%;
+  font-size: 12px;
+}
+.analysis-table th {
+  background: #243B64;
+  color: white;
+  text-align: left;
+}
+.analysis-table th, .analysis-table td {
+  padding: 9px;
+  border-bottom: 1px solid #E5EAF2;
+}
+.table-wrap { overflow: auto; }
+@media(max-width: 650px) {
+  .panel { padding: 12px; }
+}
+</style>
+</head>
+<body>
+<header>
+  <p>MARKET &amp; ASSET DIAGNOSTICS · FULL ANALYSIS</p>
+  <h1>7. Individual Asset Risk vs. Return</h1>
+  <p>Compare annualized historical mean return with annualized volatility.</p>
+</header>
+<main>
+  <p><a href="../market_asset_diagnostics_dashboard.html">← Return to main dashboard</a></p>
+
+  <section class="panel">
+    <h2>Interactive chart</h2>
+    <p class="muted">Hover for exact values; use zoom, pan, legend controls, and the camera icon for a high-resolution export.</p>
+    <div style="height:500px; width:100%;">                        <script>window.PlotlyConfig = {MathJaxConfig: 'local'};</script>
+        <script charset="utf-8" src="https://cdn.plot.ly/plotly-4.1.1.min.js" integrity="sha256-O24V1F27f8pb0glCkelh3cVHLNiHAJ5gCaVtq2aNch8=" crossorigin="anonymous"></script>                <div id="3561d25f-a14a-4a2a-9a7a-8cda57e0d3a8" class="plotly-graph-div" style="height:100%; width:100%;"></div>            <script>                window.PLOTLYENV=window.PLOTLYENV || {};                                if (document.getElementById("3561d25f-a14a-4a2a-9a7a-8cda57e0d3a8")) {                    Plotly.newPlot(                        "3561d25f-a14a-4a2a-9a7a-8cda57e0d3a8",                        [{"customdata":[[0.9324955823830255,-0.3851592190978723,0.2828820743611058,13.700117991893105]],"hovertemplate":"\u003cb\u003eAAPL\u003c\u002fb\u003e\u003cbr\u003eAnnualized mean return: %{y:.2%}\u003cbr\u003eAnnualized volatility: %{x:.2%}\u003cbr\u003eSharpe ratio: %{customdata[0]:.3f}\u003cbr\u003eMaximum drawdown: %{customdata[1]:.2%}\u003cbr\u003eCAGR: %{customdata[2]:.2%}\u003cbr\u003eTotal return: %{customdata[3]:.2%}\u003cextra\u003e\u003c\u002fextra\u003e","marker":{"color":"#2563EB","line":{"color":"#FFFFFF","width":1.5},"size":15},"mode":"markers+text","name":"AAPL","text":["AAPL"],"textposition":"top center","x":[0.28830253989222954],"y":[0.28884084483931005],"type":"scatter"},{"customdata":[[0.8794456792983603,-0.37148495053137465,0.2499566255142307,10.1041119846082]],"hovertemplate":"\u003cb\u003eMSFT\u003c\u002fb\u003e\u003cbr\u003eAnnualized mean return: %{y:.2%}\u003cbr\u003eAnnualized volatility: %{x:.2%}\u003cbr\u003eSharpe ratio: %{customdata[0]:.3f}\u003cbr\u003eMaximum drawdown: %{customdata[1]:.2%}\u003cbr\u003eCAGR: %{customdata[2]:.2%}\u003cbr\u003eTotal return: %{customdata[3]:.2%}\u003cextra\u003e\u003c\u002fextra\u003e","marker":{"color":"#7C3AED","line":{"color":"#FFFFFF","width":1.5},"size":15},"mode":"markers+text","name":"MSFT","text":["MSFT"],"textposition":"top center","x":[0.2748414707365085],"y":[0.2617081439312291],"type":"scatter"},{"customdata":[[0.7807517126487235,-0.44320073410219696,0.22612868185572466,8.021785214372983]],"hovertemplate":"\u003cb\u003eGOOGL\u003c\u002fb\u003e\u003cbr\u003eAnnualized mean return: %{y:.2%}\u003cbr\u003eAnnualized volatility: %{x:.2%}\u003cbr\u003eSharpe ratio: %{customdata[0]:.3f}\u003cbr\u003eMaximum drawdown: %{customdata[1]:.2%}\u003cbr\u003eCAGR: %{customdata[2]:.2%}\u003cbr\u003eTotal return: %{customdata[3]:.2%}\u003cextra\u003e\u003c\u002fextra\u003e","marker":{"color":"#0891B2","line":{"color":"#FFFFFF","width":1.5},"size":15},"mode":"markers+text","name":"GOOGL","text":["GOOGL"],"textposition":"top center","x":[0.29037707442429056],"y":[0.24671239817069068],"type":"scatter"},{"customdata":[[0.698149161787501,-0.5614526325328263,0.21652084905475144,7.287603091891533]],"hovertemplate":"\u003cb\u003eAMZN\u003c\u002fb\u003e\u003cbr\u003eAnnualized mean return: %{y:.2%}\u003cbr\u003eAnnualized volatility: %{x:.2%}\u003cbr\u003eSharpe ratio: %{customdata[0]:.3f}\u003cbr\u003eMaximum drawdown: %{customdata[1]:.2%}\u003cbr\u003eCAGR: %{customdata[2]:.2%}\u003cbr\u003eTotal return: %{customdata[3]:.2%}\u003cextra\u003e\u003c\u002fextra\u003e","marker":{"color":"#EA580C","line":{"color":"#FFFFFF","width":1.5},"size":15},"mode":"markers+text","name":"AMZN","text":["AMZN"],"textposition":"top center","x":[0.3294662510526391],"y":[0.25001658700967033],"type":"scatter"},{"customdata":[[0.604235690279783,-0.7673608843782554,0.194788027619766,5.822732600920456]],"hovertemplate":"\u003cb\u003eMETA\u003c\u002fb\u003e\u003cbr\u003eAnnualized mean return: %{y:.2%}\u003cbr\u003eAnnualized volatility: %{x:.2%}\u003cbr\u003eSharpe ratio: %{customdata[0]:.3f}\u003cbr\u003eMaximum drawdown: %{customdata[1]:.2%}\u003cbr\u003eCAGR: %{customdata[2]:.2%}\u003cbr\u003eTotal return: %{customdata[3]:.2%}\u003cextra\u003e\u003c\u002fextra\u003e","marker":{"color":"#DB2777","line":{"color":"#FFFFFF","width":1.5},"size":15},"mode":"markers+text","name":"META","text":["META"],"textposition":"top center","x":[0.3892097849529394],"y":[0.25517444307468523],"type":"scatter"},{"customdata":[[-0.02160612763174575,-0.18582156989864718,0.017366127531300624,0.20414507637461]],"hovertemplate":"\u003cb\u003eBND\u003c\u002fb\u003e\u003cbr\u003eAnnualized mean return: %{y:.2%}\u003cbr\u003eAnnualized volatility: %{x:.2%}\u003cbr\u003eSharpe ratio: %{customdata[0]:.3f}\u003cbr\u003eMaximum drawdown: %{customdata[1]:.2%}\u003cbr\u003eCAGR: %{customdata[2]:.2%}\u003cbr\u003eTotal return: %{customdata[3]:.2%}\u003cextra\u003e\u003c\u002fextra\u003e","marker":{"color":"#16A34A","line":{"color":"#FFFFFF","width":1.5},"size":15},"mode":"markers+text","name":"BND","text":["BND"],"textposition":"top center","x":[0.05410378313722598],"y":[0.018831026756176802],"type":"scatter"},{"customdata":[[0.6780364354924793,-0.3392496000265327,0.13237684736703792,2.8243326872018018]],"hovertemplate":"\u003cb\u003e^GSPC\u003c\u002fb\u003e\u003cbr\u003eAnnualized mean return: %{y:.2%}\u003cbr\u003eAnnualized volatility: %{x:.2%}\u003cbr\u003eSharpe ratio: %{customdata[0]:.3f}\u003cbr\u003eMaximum drawdown: %{customdata[1]:.2%}\u003cbr\u003eCAGR: %{customdata[2]:.2%}\u003cbr\u003eTotal return: %{customdata[3]:.2%}\u003cextra\u003e\u003c\u002fextra\u003e","marker":{"color":"#64748B","line":{"color":"#FFFFFF","width":1.5},"size":15},"mode":"markers+text","name":"^GSPC","text":["^GSPC"],"textposition":"top center","x":[0.17793343272605266],"y":[0.1406453504805136],"type":"scatter"}],                        {"template":{"data":{"barpolar":[{"marker":{"line":{"color":"white","width":0.5},"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"barpolar"}],"bar":[{"error_x":{"color":"#2a3f5f"},"error_y":{"color":"#2a3f5f"},"marker":{"line":{"color":"white","width":0.5},"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"bar"}],"carpet":[{"aaxis":{"endlinecolor":"#2a3f5f","gridcolor":"#C8D4E3","linecolor":"#C8D4E3","minorgridcolor":"#C8D4E3","startlinecolor":"#2a3f5f"},"baxis":{"endlinecolor":"#2a3f5f","gridcolor":"#C8D4E3","linecolor":"#C8D4E3","minorgridcolor":"#C8D4E3","startlinecolor":"#2a3f5f"},"type":"carpet"}],"choropleth":[{"colorbar":{"outlinewidth":0,"ticks":""},"type":"choropleth"}],"contourcarpet":[{"colorbar":{"outlinewidth":0,"ticks":""},"type":"contourcarpet"}],"contour":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"contour"}],"heatmap":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"heatmap"}],"histogram2dcontour":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"histogram2dcontour"}],"histogram2d":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"histogram2d"}],"histogram":[{"marker":{"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"histogram"}],"mesh3d":[{"colorbar":{"outlinewidth":0,"ticks":""},"type":"mesh3d"}],"parcoords":[{"line":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"parcoords"}],"pie":[{"automargin":true,"type":"pie"}],"scatter3d":[{"line":{"colorbar":{"outlinewidth":0,"ticks":""}},"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scatter3d"}],"scattercarpet":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scattercarpet"}],"scattergeo":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scattergeo"}],"scattergl":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scattergl"}],"scattermap":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scattermap"}],"scatterpolargl":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scatterpolargl"}],"scatterpolar":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scatterpolar"}],"scatter":[{"fillpattern":{"fillmode":"overlay","size":10,"solidity":0.2},"type":"scatter"}],"scatterternary":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scatterternary"}],"surface":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"surface"}],"table":[{"cells":{"fill":{"color":"#EBF0F8"},"line":{"color":"white"}},"header":{"fill":{"color":"#C8D4E3"},"line":{"color":"white"}},"type":"table"}]},"layout":{"annotationdefaults":{"arrowcolor":"#2a3f5f","arrowhead":0,"arrowwidth":1},"autotypenumbers":"strict","coloraxis":{"colorbar":{"outlinewidth":0,"ticks":""}},"colorscale":{"diverging":[[0,"#8e0152"],[0.1,"#c51b7d"],[0.2,"#de77ae"],[0.3,"#f1b6da"],[0.4,"#fde0ef"],[0.5,"#f7f7f7"],[0.6,"#e6f5d0"],[0.7,"#b8e186"],[0.8,"#7fbc41"],[0.9,"#4d9221"],[1,"#276419"]],"sequential":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"sequentialminus":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]},"colorway":["#636efa","#EF553B","#00cc96","#ab63fa","#FFA15A","#19d3f3","#FF6692","#B6E880","#FF97FF","#FECB52"],"font":{"color":"#2a3f5f"},"geo":{"bgcolor":"white","lakecolor":"white","landcolor":"white","showlakes":true,"showland":true,"subunitcolor":"#C8D4E3"},"hoverlabel":{"align":"left"},"hovermode":"closest","paper_bgcolor":"white","plot_bgcolor":"white","polar":{"angularaxis":{"gridcolor":"#EBF0F8","linecolor":"#EBF0F8","ticks":""},"bgcolor":"white","radialaxis":{"gridcolor":"#EBF0F8","linecolor":"#EBF0F8","ticks":""}},"scene":{"xaxis":{"backgroundcolor":"white","gridcolor":"#DFE8F3","gridwidth":2,"linecolor":"#EBF0F8","showbackground":true,"ticks":"","zerolinecolor":"#EBF0F8"},"yaxis":{"backgroundcolor":"white","gridcolor":"#DFE8F3","gridwidth":2,"linecolor":"#EBF0F8","showbackground":true,"ticks":"","zerolinecolor":"#EBF0F8"},"zaxis":{"backgroundcolor":"white","gridcolor":"#DFE8F3","gridwidth":2,"linecolor":"#EBF0F8","showbackground":true,"ticks":"","zerolinecolor":"#EBF0F8"}},"shapedefaults":{"line":{"color":"#2a3f5f"}},"ternary":{"aaxis":{"gridcolor":"#DFE8F3","linecolor":"#A2B1C6","ticks":""},"baxis":{"gridcolor":"#DFE8F3","linecolor":"#A2B1C6","ticks":""},"bgcolor":"white","caxis":{"gridcolor":"#DFE8F3","linecolor":"#A2B1C6","ticks":""}},"title":{"x":0.05},"xaxis":{"automargin":true,"gridcolor":"#EBF0F8","linecolor":"#EBF0F8","ticks":"","title":{"standoff":15},"zerolinecolor":"#EBF0F8","zerolinewidth":2},"yaxis":{"automargin":true,"gridcolor":"#EBF0F8","linecolor":"#EBF0F8","ticks":"","title":{"standoff":15},"zerolinecolor":"#EBF0F8","zerolinewidth":2}}},"shapes":[{"line":{"color":"#64748B","dash":"dash"},"type":"line","x0":0,"x1":1,"xref":"x domain","y0":0.02,"y1":0.02,"yref":"y"}],"annotations":[{"showarrow":false,"text":"2% risk-free-rate reference","x":1,"xanchor":"right","xref":"x domain","y":0.02,"yanchor":"top","yref":"y"}],"title":{"text":"7. Individual Asset Risk vs. Return","font":{"size":18,"color":"#172B4D"},"x":0.02,"xanchor":"left"},"xaxis":{"title":{"text":"Annualized volatility"},"tickformat":".0%","showgrid":true,"gridcolor":"#E5EAF2","zeroline":false,"linecolor":"#D6DEEA"},"yaxis":{"title":{"text":"Annualized arithmetic mean return"},"tickformat":".0%","showgrid":true,"gridcolor":"#E5EAF2","zeroline":false,"linecolor":"#D6DEEA"},"font":{"family":"Arial, sans-serif","color":"#172B4D","size":12},"margin":{"l":60,"r":35,"t":85,"b":60},"hoverlabel":{"font":{"size":12},"bgcolor":"#FFFFFF"},"legend":{"orientation":"h","yanchor":"bottom","y":1.02,"xanchor":"left","x":0,"bgcolor":"rgba(255,255,255,0.85)"},"paper_bgcolor":"#FFFFFF","plot_bgcolor":"#FFFFFF","height":500},                        {"responsive": true, "displaylogo": false, "scrollZoom": true, "toImageButtonOptions": {"format": "png", "scale": 4, "filename": "07_risk_return"}}                    )                };            </script>        </div>
+  </section>
+
+  <section class="panel">
+    <h2>What this chart measures</h2>
+    <p>Plots annualized arithmetic mean return against annualized volatility for each asset.</p>
+    <h2>Why it matters for portfolio research</h2>
+    <p>Provides a descriptive comparison of historical return and variability.</p>
+    <h2>Construction and formula</h2>
+    <p>Annualized mean = mean daily return × 252; annualized volatility = sample standard deviation × sqrt(252).</p>
+  </section>
+
+  <section class="panel">
+    <h2>Calculated finding</h2>
+    <div class="finding">AAPL had the highest sample Sharpe ratio using the assumed 2% annual risk-free rate.</div>
+  </section>
+
+  <section class="panel">
+    <h2>Assumptions and limitations</h2>
+    <p>Historical means are noisy. Single-asset comparisons are not optimized portfolio results and do not imply an investment recommendation.</p>
+    <p class="muted">Annualization convention: 252 observations per year. Assumed annual risk-free rate: 2.00%. Results describe the supplied historical sample and are not forecasts or investment advice.</p>
+  </section>
+
+  <section class="panel">
+    <h2>Asset-level numerical results</h2>
+    <p class="muted">The table provides calculated metrics for all included assets. The Excel workbook contains the daily series and chart-specific data.</p>
+    <div class="table-wrap"><table class="dataframe analysis-table">
+  <thead>
+    <tr style="text-align: right;">
+      <th>Asset</th>
+      <th>Start_Date</th>
+      <th>End_Date</th>
+      <th>Price_Observations</th>
+      <th>Return_Observations</th>
+      <th>Total_Return</th>
+      <th>CAGR</th>
+      <th>Annualized_Mean_Return</th>
+      <th>Annualized_Volatility</th>
+      <th>Sharpe_Ratio</th>
+      <th>Sortino_Ratio</th>
+      <th>Worst_Daily_Return</th>
+      <th>Historical_5pct_Return</th>
+      <th>Historical_1pct_Return</th>
+      <th>Return_Skewness</th>
+      <th>Return_Excess_Kurtosis</th>
+      <th>Maximum_Drawdown</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>AAPL</td>
+      <td>2016-01-05</td>
+      <td>2026-10-20</td>
+      <td>2714</td>
+      <td>2714</td>
+      <td>13.7001</td>
+      <td>0.2829</td>
+      <td>0.2888</td>
+      <td>0.2883</td>
+      <td>0.9325</td>
+      <td>1.3756</td>
+      <td>-0.1286</td>
+      <td>-0.0270</td>
+      <td>-0.0484</td>
+      <td>0.1099</td>
+      <td>6.7737</td>
+      <td>-0.3852</td>
+    </tr>
+    <tr>
+      <td>MSFT</td>
+      <td>2016-01-05</td>
+      <td>2026-10-20</td>
+      <td>2714</td>
+      <td>2714</td>
+      <td>10.1041</td>
+      <td>0.2500</td>
+      <td>0.2617</td>
+      <td>0.2748</td>
+      <td>0.8794</td>
+      <td>1.3100</td>
+      <td>-0.1474</td>
+      <td>-0.0266</td>
+      <td>-0.0430</td>
+      <td>0.2689</td>
+      <td>8.8871</td>
+      <td>-0.3715</td>
+    </tr>
+    <tr>
+      <td>GOOGL</td>
+      <td>2016-01-05</td>
+      <td>2026-10-20</td>
+      <td>2714</td>
+      <td>2714</td>
+      <td>8.0218</td>
+      <td>0.2261</td>
+      <td>0.2467</td>
+      <td>0.2904</td>
+      <td>0.7808</td>
+      <td>1.1403</td>
+      <td>-0.1163</td>
+      <td>-0.0276</td>
+      <td>-0.0494</td>
+      <td>0.0350</td>
+      <td>4.4212</td>
+      <td>-0.4432</td>
+    </tr>
+    <tr>
+      <td>AMZN</td>
+      <td>2016-01-05</td>
+      <td>2026-10-20</td>
+      <td>2714</td>
+      <td>2714</td>
+      <td>7.2876</td>
+      <td>0.2165</td>
+      <td>0.2500</td>
+      <td>0.3295</td>
+      <td>0.6981</td>
+      <td>1.0399</td>
+      <td>-0.1405</td>
+      <td>-0.0309</td>
+      <td>-0.0551</td>
+      <td>0.3277</td>
+      <td>5.7511</td>
+      <td>-0.5615</td>
+    </tr>
+    <tr>
+      <td>META</td>
+      <td>2016-01-05</td>
+      <td>2026-10-20</td>
+      <td>2714</td>
+      <td>2714</td>
+      <td>5.8227</td>
+      <td>0.1948</td>
+      <td>0.2552</td>
+      <td>0.3892</td>
+      <td>0.6042</td>
+      <td>0.8771</td>
+      <td>-0.2639</td>
+      <td>-0.0354</td>
+      <td>-0.0628</td>
+      <td>-0.1620</td>
+      <td>18.4688</td>
+      <td>-0.7674</td>
+    </tr>
+    <tr>
+      <td>BND</td>
+      <td>2016-01-05</td>
+      <td>2026-10-20</td>
+      <td>2714</td>
+      <td>2714</td>
+      <td>0.2041</td>
+      <td>0.0174</td>
+      <td>0.0188</td>
+      <td>0.0541</td>
+      <td>-0.0216</td>
+      <td>-0.0301</td>
+      <td>-0.0544</td>
+      <td>-0.0049</td>
+      <td>-0.0087</td>
+      <td>-0.9208</td>
+      <td>36.0580</td>
+      <td>-0.1858</td>
+    </tr>
+    <tr>
+      <td>^GSPC</td>
+      <td>2016-01-05</td>
+      <td>2026-10-20</td>
+      <td>2714</td>
+      <td>2714</td>
+      <td>2.8243</td>
+      <td>0.1324</td>
+      <td>0.1406</td>
+      <td>0.1779</td>
+      <td>0.6780</td>
+      <td>0.9535</td>
+      <td>-0.1198</td>
+      <td>-0.0165</td>
+      <td>-0.0325</td>
+      <td>-0.3716</td>
+      <td>15.7541</td>
+      <td>-0.3392</td>
+    </tr>
+  </tbody>
+</table></div>
+  </section>
+</main>
+</body>
+</html>

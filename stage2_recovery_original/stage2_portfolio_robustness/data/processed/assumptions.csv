@@ -1,0 +1,14 @@
+Assumption,Value,Definition
+Input returns,data\processed\daily_returns.csv,Existing processed daily returns; no redownload
+Assets,"AAPL, MSFT, GOOGL, AMZN, META, BND",Portfolio universe; S&P 500 used only as a benchmark when available
+Trading days per year,252,Annualization convention
+Risk-free rate,0.02,Annual rate used in Sharpe objectives and ratios
+Maximum asset weight,0.4,Long-only individual weight cap
+Rolling estimation window,756,Daily observations; approximately three trading years
+Rebalance interval,21,Trading observations
+Bootstrap replications,60,Computational baseline; increase for final research
+Bootstrap block length,21,Moving circular blocks preserve short-run dependence
+Random seed,42,Reproducibility
+In-sample fraction,0.7,"Chronological split; first 70% train, last 30% test"
+Missing data policy,Drop rows missing any portfolio asset,Common aligned universe for covariance/optimization
+Transaction costs,Not included,Turnover and cost sensitivity are not a live-trading claim

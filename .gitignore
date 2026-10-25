@@ -1,0 +1,17 @@
+﻿.venv/
+.venv-*/
+venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ipynb_checkpoints/
+.env
+*.log
+*.zip
+*.rar
+.DS_Store
+
+*.rar
+
+~$*
+*.bak

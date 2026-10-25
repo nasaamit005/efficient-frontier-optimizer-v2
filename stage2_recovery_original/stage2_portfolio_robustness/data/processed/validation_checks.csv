@@ -1,0 +1,11 @@
+Check,Passed,Details
+No missing asset returns,True,rows=2714
+All returns > -100%,True,Compounded wealth remains mathematically valid
+Chronological split,True,"train end=2023-07-21, test start=2023-07-24"
+Training/test disjoint,True,"Chronological split, no overlapping dates"
+Weights sum to one,True,Training-only and equal-weight strategies
+Weights obey cap,True,Long-only capped optimizer strategies
+No-lookahead OOS,True,Weights estimated on first 70% only; held-out returns begin after training period
+Bootstrap replication count,True,requested=60; successful=60
+Bootstrap frontier points,True,replications=52; points=739
+Rolling realized observations,True,strategies=2

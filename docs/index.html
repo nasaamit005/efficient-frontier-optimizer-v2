@@ -1,0 +1,58 @@
+﻿<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Efficient Frontier Optimizer | Amit Singh</title>
+<style>
+:root{--navy:#17324d;--blue:#2878b5;--bg:#f3f7fb;--text:#263445;--muted:#62748a;--border:#dce5ef}
+*{box-sizing:border-box}
+body{margin:0;font-family:Segoe UI,Arial,sans-serif;background:var(--bg);color:var(--text);line-height:1.65}
+header{background:linear-gradient(120deg,#17324d,#245b80);color:white;padding:52px 22px}
+.wrap{max-width:1050px;margin:auto}
+h1{font-size:clamp(30px,5vw,46px);line-height:1.15;margin:0 0 14px}
+header p{max-width:760px;color:#e1edf6}
+main{padding:30px 22px 54px}
+.intro{color:var(--muted);max-width:850px}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:20px;margin:28px 0}
+.card{background:white;border:1px solid var(--border);border-radius:16px;padding:25px;box-shadow:0 7px 24px #17324d0b}
+.tag{font-size:12px;font-weight:700;letter-spacing:1px;color:var(--blue);text-transform:uppercase}
+h2{color:var(--navy);margin:8px 0}
+a{color:var(--blue);font-weight:650;text-decoration:none}
+a:hover{text-decoration:underline}
+.link{display:inline-block;margin-top:12px;padding:10px 14px;border:1px solid var(--blue);border-radius:8px}
+.note{background:#e7f1f9;border-left:4px solid var(--blue);padding:15px 18px;border-radius:8px}
+footer{border-top:1px solid var(--border);padding:20px 22px;color:var(--muted);font-size:14px}
+</style>
+</head>
+<body>
+<header><div class="wrap">
+<p>QUANTITATIVE FINANCE · PORTFOLIO RESEARCH</p>
+<h1>Efficient Frontier Optimizer</h1>
+<p>A reproducible portfolio research project exploring mean–variance optimization, asset allocation, out-of-sample performance and portfolio robustness.</p>
+<p>Author: Amit Singh · GitHub: <a style="color:white" href="https://github.com/nasaamit005">nasaamit005</a></p>
+</div></header>
+<main class="wrap">
+<h2>Explore the project</h2>
+<p class="intro">Choose a stage below to open its interactive analysis. Charts support hover inspection and interactive exploration where provided by Plotly.</p>
+<div class="cards">
+<section class="card">
+<div class="tag">Stage 1 · Portfolio optimization</div>
+<h2>Efficient Frontier & Asset Diagnostics</h2>
+<p>Explore the efficient frontier, optimal portfolio allocations, risk–return trade-offs and supporting market/asset diagnostics.</p>
+<a class="link" href="stage1/efficient_frontier_dashboard.html">Open Efficient Frontier Dashboard →</a>
+<br><a class="link" href="stage1/market_asset_diagnostics_dashboard.html">Open Asset Diagnostics →</a>
+</section>
+<section class="card">
+<div class="tag">Stage 2 · Robustness research</div>
+<h2>Portfolio Dynamics & Robustness</h2>
+<p>Investigate rolling portfolio weights, out-of-sample performance, rolling Sharpe ratios, bootstrap frontier estimates and covariance estimation.</p>
+<a class="link" href="stage2/dashboard/stage2_dashboard.html">Open Stage 2 Dashboard →</a>
+<br><a class="link" href="stage2/reports/stage2_summary.html">Read Stage 2 Summary →</a>
+</section>
+</div>
+<div class="note"><strong>Research note:</strong> Historical results and optimized portfolios do not guarantee future performance. Interpret estimates in light of the sample period, assumptions, estimation error and transaction costs.</div>
+</main>
+<footer><div class="wrap">Built for transparent, reproducible quantitative finance research. <a href="https://github.com/nasaamit005/efficient-frontier-optimizer-v2">View source repository</a></div></footer>
+</body>
+</html>

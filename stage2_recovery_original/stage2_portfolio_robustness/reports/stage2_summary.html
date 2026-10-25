@@ -1,0 +1,128 @@
+<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Stage 2 Summary</title>
+    <style>body{font:16px/1.6 Arial;background:#f4f7fb;color:#263445;max-width:1000px;margin:30px auto;padding:0 20px}h1,h2{color:#17324d}section{background:white;padding:20px;border-radius:12px;margin:18px 0}table{border-collapse:collapse;width:100%}td,th{border:1px solid #dce4ee;padding:8px;text-align:left}th{background:#eaf3fb}</style></head><body>
+    <h1>Stage 2 — Results and Interpretation</h1><p>Generated from the existing processed returns file. All performance results are historical estimates, not investment advice or promises.</p>
+    <section><h2>Study design</h2><p>Assets: AAPL, MSFT, GOOGL, AMZN, META, BND. Observations after complete-case alignment: 2,714. Date range: 2016-01-05 to 2026-10-20.
+    Chronological training period ends 2023-07-21; out-of-sample period begins 2023-07-24.
+    Annualization uses 252 trading days; assumed risk-free rate is 2.0%; long-only optimized weights are capped at 40% per asset.</p></section>
+    <section><h2>Out-of-sample comparison</h2><table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th>Period</th>
+      <th>Strategy</th>
+      <th>Observations</th>
+      <th>Total Return</th>
+      <th>CAGR</th>
+      <th>Annualized Mean Return</th>
+      <th>Annualized Volatility</th>
+      <th>Sharpe Ratio</th>
+      <th>Sortino Ratio</th>
+      <th>Maximum Drawdown</th>
+      <th>Calmar Ratio</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Out-of-Sample</td>
+      <td>Maximum Sharpe (train-only)</td>
+      <td>815</td>
+      <td>0.6136</td>
+      <td>0.1594</td>
+      <td>0.1629</td>
+      <td>0.1733</td>
+      <td>0.8245</td>
+      <td>1.2459</td>
+      <td>-0.2175</td>
+      <td>0.7329</td>
+    </tr>
+    <tr>
+      <td>Out-of-Sample</td>
+      <td>Minimum Variance (train-only)</td>
+      <td>815</td>
+      <td>0.6805</td>
+      <td>0.1741</td>
+      <td>0.1690</td>
+      <td>0.1302</td>
+      <td>1.1440</td>
+      <td>1.7281</td>
+      <td>-0.1611</td>
+      <td>1.0809</td>
+    </tr>
+    <tr>
+      <td>Out-of-Sample</td>
+      <td>Equal Weight</td>
+      <td>815</td>
+      <td>1.0095</td>
+      <td>0.2408</td>
+      <td>0.2335</td>
+      <td>0.1883</td>
+      <td>1.1337</td>
+      <td>1.7099</td>
+      <td>-0.2130</td>
+      <td>1.1305</td>
+    </tr>
+  </tbody>
+</table></section>
+    <section><h2>Bootstrap Sharpe uncertainty</h2><p>For the held-out maximum-Sharpe strategy, block-bootstrap Sharpe percentiles: 2.5% = -0.158, median = 0.801, 97.5% = 1.887. These are conditional on the selected training strategy and held-out sample; they do not account for every model-selection uncertainty.</p></section>
+    <section><h2>Validation</h2><table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th>Check</th>
+      <th>Passed</th>
+      <th>Details</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>No missing asset returns</td>
+      <td>True</td>
+      <td>rows=2714</td>
+    </tr>
+    <tr>
+      <td>All returns &gt; -100%</td>
+      <td>True</td>
+      <td>Compounded wealth remains mathematically valid</td>
+    </tr>
+    <tr>
+      <td>Chronological split</td>
+      <td>True</td>
+      <td>train end=2023-07-21, test start=2023-07-24</td>
+    </tr>
+    <tr>
+      <td>Training/test disjoint</td>
+      <td>True</td>
+      <td>Chronological split, no overlapping dates</td>
+    </tr>
+    <tr>
+      <td>Weights sum to one</td>
+      <td>True</td>
+      <td>Training-only and equal-weight strategies</td>
+    </tr>
+    <tr>
+      <td>Weights obey cap</td>
+      <td>True</td>
+      <td>Long-only capped optimizer strategies</td>
+    </tr>
+    <tr>
+      <td>No-lookahead OOS</td>
+      <td>True</td>
+      <td>Weights estimated on first 70% only; held-out returns begin after training period</td>
+    </tr>
+    <tr>
+      <td>Bootstrap replication count</td>
+      <td>True</td>
+      <td>requested=60; successful=60</td>
+    </tr>
+    <tr>
+      <td>Bootstrap frontier points</td>
+      <td>True</td>
+      <td>replications=52; points=739</td>
+    </tr>
+    <tr>
+      <td>Rolling realized observations</td>
+      <td>True</td>
+      <td>strategies=2</td>
+    </tr>
+  </tbody>
+</table></section>
+    <section><h2>Limitations</h2><ul><li>Historical mean/covariance estimates are noisy and sensitive to the sample period.</li><li>No transaction costs, taxes, slippage, liquidity constraints, or rebalancing execution effects are included.</li><li>Bootstrap estimates use a circular moving-block method and a finite number of replications; increase replications for publication-quality inference.</li><li>Optimized portfolio results are sensitive to the 2% risk-free rate and 40% weight cap.</li><li>Survivorship and point-in-time universe effects are not addressed by this fixed current-asset universe.</li></ul></section>
+    <p><a href="../dashboard/stage2_dashboard.html">Open interactive dashboard</a> · <a href="stage2_results.xlsx">Download workbook</a></p></body></html>
