@@ -1,4 +1,14 @@
-﻿# Efficient Frontier Optimizer
+﻿
+# Efficient Frontier Optimizer
+
+**Live Website:** [Open the Interactive Project](https://nasaamit005.github.io/efficient-frontier-optimizer-v2/)
+
+**Author:** Amit Singh  
+**GitHub:** [nasaamit005](https://github.com/nasaamit005)
+
+A quantitative finance research project exploring portfolio optimization, efficient frontiers, asset allocation, out-of-sample evaluation, and portfolio robustness.
+
+# Efficient Frontier Optimizer
 
 **Author:** Amit Singh  
 **GitHub:** [nasaamit005](https://github.com/nasaamit005)
